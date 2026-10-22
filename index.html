@@ -283,8 +283,8 @@
         <h3 style="color: var(--primary); font-size: 1rem; margin-bottom: 6px;">Sesi Pengerjaan Ditemukan!</h3>
         <p id="resume-msg" style="margin-bottom: 14px; font-size: 0.92rem; color: #1e293b;"></p>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn" style="background: var(--accent);" onclick="resumeSession()">Lanjutkan Pengerjaan ➔</button>
-          <button class="btn btn-outline" style="border-color: #dc2626; color: #dc2626;" onclick="resetCurrentSession()">Mulai Baru (Reset Sesi)</button>
+<!-- SESUDAH: -->
+<button class="btn" style="background: var(--accent); width: 100%;" onclick="resumeSession()">Lanjutkan Pengerjaan ➔</button>
         </div>
       </div>
     </div>
@@ -618,15 +618,6 @@
     if (confirm("Reset seluruh data lokal sesi DISC di browser ini?")) {
       localStorage.removeItem(STORAGE_KEY);
       if (activeToken) localStorage.removeItem("disc_strikes_" + activeToken);
-      location.reload();
-    }
-  }
-
-  function resetCurrentSession() {
-    if (confirm("Hapus draf pengerjaan lokal dan mulai dari awal?")) {
-      localStorage.removeItem(STORAGE_KEY);
-      if (activeToken) localStorage.removeItem("disc_strikes_" + activeToken);
-      alert("Sesi lokal dibersihkan. Silakan klik 'Verifikasi Token' untuk memulai sesi baru.");
       location.reload();
     }
   }
