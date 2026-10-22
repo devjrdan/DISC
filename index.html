@@ -30,6 +30,7 @@
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
+      -webkit-touch-callout: none;
     }
 
     input, select, textarea {
@@ -37,6 +38,10 @@
       -moz-user-select: text !important;
       -ms-user-select: text !important;
       user-select: text !important;
+    }
+
+    @media print {
+      body { display: none !important; }
     }
 
     .container { 
@@ -50,6 +55,8 @@
       display: flex; 
       flex-direction: column; 
       min-height: 560px;
+      position: relative;
+      z-index: 1;
     }
     
     /* Header & Timer */
@@ -130,6 +137,12 @@
     .btn-outline { background: white; color: var(--text); border: 1px solid var(--border); }
     .btn-outline:hover { background: #f1f5f9; }
 
+    /* Sensor Buram Saat Fokus Hilang */
+    body.focus-lost #screen-test {
+      filter: blur(18px);
+      pointer-events: none;
+    }
+
     /* Tabel Pilihan DISC (Most & Least) */
     .disc-table {
       width: 100%;
@@ -171,10 +184,69 @@
       font-size: 0.92rem; 
     }
 
+    /* Kotak Peringatan Keamanan (Standar IST) */
+    .inst-warning-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #dc2626;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: 0.88rem;
+      color: #7f1d1d;
+      line-height: 1.55;
+    }
+    .inst-warning-box strong.title {
+      display: block;
+      color: #991b1b;
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .inst-warning-box ul { margin: 0; padding-left: 18px; }
+    .inst-warning-box li { margin-bottom: 4px; }
+
+    /* Modal Strike Pelanggaran */
+    #strike-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      z-index: 9999999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 440px;
+      width: 100%;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
+
+<!-- MODAL PERINGATAN PELANGGARAN KEAMANAN (0/3 -> 3/3 DISKUALIFIKASI) -->
+<div id="strike-modal">
+  <div class="modal-box">
+    <div style="font-size: 2.8rem; margin-bottom: 8px; line-height: 1;">⚠️</div>
+    <h3 id="strike-title" style="color: #dc2626; font-size: 1.25rem; margin-bottom: 10px; font-weight: 800;">PERINGATAN KEAMANAN (1/3)</h3>
+    <p id="strike-desc" style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px;"></p>
+    <button class="btn" style="background: #dc2626; width: 100%; font-size: 1rem; padding: 12px;" id="btn-strike-ack">Saya Mengerti & Lanjutkan</button>
+  </div>
+</div>
 
 <div class="container">
   
@@ -217,7 +289,7 @@
       </div>
     </div>
 
-    <!-- SCREEN 1: DATA DIRI PESERTA (LENGKAP 5 KOLOM) -->
+    <!-- SCREEN 1: DATA DIRI PESERTA -->
     <div id="screen-profile" hidden>
       <h1>Data Diri Peserta</h1>
       <p>Token Terverifikasi: <strong id="display-active-token" style="color: var(--primary);"></strong>. Lengkapi data diri Anda sebelum melanjutkan ke lembar instruksi & tes.</p>
@@ -282,6 +354,19 @@
         </ol>
       </div>
 
+      <!-- KOTAK PERINGATAN KEAMANAN (STANDAR IST) -->
+      <div class="inst-warning-box">
+        <strong class="title">⚠️ Peraturan & Keamanan Selama Pengerjaan:</strong>
+        <ul>
+          <li><strong>Alokasi Waktu Pengerjaan:</strong> 7 Menit (timer mulai saat tombol ditekan).</li>
+          <li><strong>Jangan sampai layar perangkat mati / terkunci</strong> selama pengerjaan berlangsung.</li>
+          <li><strong>Jangan berpindah tab, meminimalkan peramban, atau membuka jendela lain.</strong></li>
+          <li><strong>Dilarang melakukan tangkapan layar (screenshot)</strong> — setiap pelanggaran tercatat otomatis (konsekuensi <strong>Peringatan 0/3 hingga Diskualifikasi</strong>).</li>
+          <li><strong>Jangan gunakan aplikasi overlay eksternal</strong> (seperti <em>AssistiveTouch</em>, <em>floating chat</em>, atau mode <em>Split Screen</em>).</li>
+          <li>Sangat disarankan menggunakan perangkat <strong>Windows (PC/Laptop)</strong> atau <strong>Android</strong> demi kelancaran sistem.</li>
+        </ul>
+      </div>
+
       <div class="card" style="background: #f8fafc; border: 1px dashed var(--primary);">
         <h3 style="color: var(--primary); font-size: 1rem; margin-bottom: 6px;">💡 Simulasi Latihan:</h3>
         <p style="font-size: 0.9rem; margin-bottom: 12px;">Cobalah memilih 1 opsi di kolom <strong>PALING</strong> dan 1 opsi di kolom <strong>KURANG</strong> pada baris berbeda untuk mengaktifkan tombol mulai:</p>
@@ -341,8 +426,8 @@
 
     <!-- SCREEN 4: FINISH SCREEN -->
     <div id="screen-finish" hidden style="text-align: center; padding: 48px 16px;">
-      <h1 style="color: var(--accent); margin-bottom: 12px;">Tes DISC Telah Selesai</h1>
-      <p style="font-size: 1rem; max-width: 520px; margin: 0 auto 24px auto;">
+      <h1 id="finish-title" style="color: var(--accent); margin-bottom: 12px;">Tes DISC Telah Selesai</h1>
+      <p id="finish-desc" style="font-size: 1rem; max-width: 520px; margin: 0 auto 24px auto;">
         Terima kasih telah menyelesaikan rangkaian Personality System Test (DISC). Seluruh hasil pengerjaan Anda telah tersimpan secara aman di server penguji.
       </p>
       <div style="font-size: 0.85rem; color: var(--muted);">Token Anda kini telah dinonaktifkan. Anda dipersilakan menutup tab ini.</div>
@@ -353,9 +438,8 @@
 
 <script>
   /* ============ PENGATURAN ============ */
-  // Tempel URL Web App Google Apps Script DISC Anda di sini (berakhiran /exec)
   const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbz2x6MfR0Wp4EZSfeemuWV7lbjI9jrENyYXQKdaDA26trCsN_qDQ0ejJcdnrDHKkqQ/exec";
-  const TEST_SECONDS = 7 * 60; // 7 Menit Standar
+  const TEST_SECONDS = 7 * 60; // 7 Menit
   const STORAGE_KEY = "disc_active_session";
 
   /* ============ 24 KOTAK SOAL PERSIS SESUAI DOKUMEN PDF ============ */
@@ -515,9 +599,25 @@
   let timerInterval = null;
   let isTestActive = false;
 
+  /* ============ SISTEM KEAMANAN & PELANGGARAN (IST ENGINE) ============ */
+  let cheatStrikes = 0;
+  const MAX_STRIKES = 3;
+  let isStrikeCooldown = false;
+  let isGracePeriod = false;
+  let isPageUnloading = false;
+  let awayTimestamp = null;
+  let isDisqualified = false;
+  let cheatLogReason = "";
+
+  function triggerGracePeriod() {
+    isGracePeriod = true;
+    setTimeout(() => { isGracePeriod = false; }, 3500);
+  }
+
   function quickDevReset() {
     if (confirm("Reset seluruh data lokal sesi DISC di browser ini?")) {
       localStorage.removeItem(STORAGE_KEY);
+      if (activeToken) localStorage.removeItem("disc_strikes_" + activeToken);
       location.reload();
     }
   }
@@ -525,10 +625,21 @@
   function resetCurrentSession() {
     if (confirm("Hapus draf pengerjaan lokal dan mulai dari awal?")) {
       localStorage.removeItem(STORAGE_KEY);
+      if (activeToken) localStorage.removeItem("disc_strikes_" + activeToken);
       alert("Sesi lokal dibersihkan. Silakan klik 'Verifikasi Token' untuk memulai sesi baru.");
       location.reload();
     }
   }
+
+  /* PENCEGAH FALSE STRIKE SAAT REFRESH */
+  window.addEventListener("keydown", function(e) {
+    if (e.key === "F5" || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r")) {
+      isPageUnloading = true;
+    }
+  }, true);
+
+  window.addEventListener("beforeunload", function () { isPageUnloading = true; });
+  window.addEventListener("pagehide", function () { isPageUnloading = true; });
 
   /* 1. Verifikasi Token Langsung ke Server Spreadsheet */
   async function verifyToken() {
@@ -642,6 +753,7 @@
     $("progress-container").hidden = false;
     isTestActive = true;
 
+    triggerGracePeriod();
     runTimer();
     renderQuestion();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -780,8 +892,10 @@
         candidate: candidateData,
         answers: answers,
         currentQuestion: currentQuestion,
-        totalTimeSeconds: totalTimeSeconds
+        totalTimeSeconds: totalTimeSeconds,
+        cheatStrikes: cheatStrikes
       }));
+      localStorage.setItem("disc_strikes_" + activeToken, cheatStrikes.toString());
     } catch (e) {}
   }
 
@@ -797,6 +911,15 @@
     currentQuestion = data.currentQuestion || 0;
     totalTimeSeconds = data.totalTimeSeconds || TEST_SECONDS;
 
+    // Pulihkan Peringatan Pelanggaran dari localStorage
+    const savedStrikes = parseInt(localStorage.getItem("disc_strikes_" + activeToken) || data.cheatStrikes || "0");
+    cheatStrikes = Math.min(savedStrikes, MAX_STRIKES);
+
+    if (cheatStrikes >= MAX_STRIKES) {
+      alert("Sesi ini tercatat telah didiskualifikasi karena melanggar batas maksimal peringatan.");
+      return;
+    }
+
     $("nameInput").value = candidateData.name || "";
     $("emailInput").value = candidateData.email || "";
     $("nohpInput").value = candidateData.nohp || "";
@@ -806,6 +929,7 @@
       if (gEl) gEl.checked = true;
     }
 
+    triggerGracePeriod();
     $("screen-token").hidden = true;
     if (candidateData.name && candidateData.email) {
       $("screen-test").hidden = false;
@@ -818,24 +942,141 @@
     }
   }
 
+  /* ============ SISTEM DETEKSI PELANGGARAN & MODAL (STRIKE SYSTEM) ============ */
+  function registerViolation(reason) {
+    if (isPageUnloading || isGracePeriod || !isTestActive) return;
+
+    if (isStrikeCooldown) return;
+    isStrikeCooldown = true;
+    setTimeout(() => { isStrikeCooldown = false; }, 2500);
+
+    cheatStrikes = Math.min(cheatStrikes + 1, MAX_STRIKES);
+    saveProgress();
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText("").catch(() => {});
+    }
+
+    const modal = document.getElementById("strike-modal");
+    const title = document.getElementById("strike-title");
+    const desc = document.getElementById("strike-desc");
+    const btn = document.getElementById("btn-strike-ack");
+
+    if (cheatStrikes >= MAX_STRIKES) {
+      isDisqualified = true;
+      cheatLogReason = `Diskualifikasi: ${cheatStrikes}x (${reason})`;
+      
+      title.innerText = `DISKUALIFIKASI (${cheatStrikes}/${MAX_STRIKES})`;
+      desc.innerHTML = `Anda telah melakukan tindakan terlarang (<strong>${reason}</strong>) sebanyak 3 kali.<br><br>Sesi ujian Anda dihentikan dan token dinyatakan hangus.`;
+      btn.innerText = "Tutup & Kirim Status";
+      btn.onclick = function() {
+        modal.style.display = "none";
+      };
+      modal.style.display = "flex";
+
+      submitAssessment(true);
+
+    } else {
+      title.innerText = `PERINGATAN KEAMANAN (${cheatStrikes}/${MAX_STRIKES})`;
+      desc.innerHTML = `Terdeteksi aktivitas: <strong>${reason}</strong>.<br><br>Peringatan ini tersimpan pada token Anda. Jika mencapai <strong>${MAX_STRIKES} kali</strong>, Anda otomatis <strong>didiskualifikasi</strong>.`;
+      btn.innerText = "Saya Mengerti & Lanjutkan";
+      btn.onclick = function() {
+        modal.style.display = "none";
+        document.body.classList.remove("focus-lost");
+      };
+      modal.style.display = "flex";
+    }
+  }
+
+  function handleAway() {
+    if (isPageUnloading || isGracePeriod || !isTestActive) return;
+    document.body.classList.add("focus-lost");
+    awayTimestamp = Date.now();
+  }
+
+  function handleReturn(reason) {
+    document.body.classList.remove("focus-lost");
+    if (isPageUnloading || isGracePeriod || !isTestActive) return;
+
+    if (awayTimestamp) {
+      const duration = Date.now() - awayTimestamp;
+      awayTimestamp = null;
+      if (duration > 1000) {
+        registerViolation(reason);
+      }
+    }
+  }
+
+  /* DETEKSI EVENT KEAMANAN */
+  window.addEventListener("keyup", function(e) {
+    if (e.key === "PrintScreen") {
+      registerViolation("Menekan Tombol Tangkapan Layar (PrintScreen)");
+    }
+  });
+
+  document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === "hidden") {
+      handleAway();
+    } else if (document.visibilityState === "visible") {
+      handleReturn("Meninggalkan Halaman Ujian / Beralih Tab");
+    }
+  });
+
+  window.addEventListener("touchstart", function(e) {
+    if (e.touches && e.touches.length > 1) {
+      registerViolation("Gestur Multi-Jari / Tangkapan Layar HP");
+    }
+  }, { passive: true });
+
+  window.addEventListener("blur", function() {
+    handleAway();
+  });
+
+  window.addEventListener("focus", function() {
+    handleReturn("Membuka Aplikasi Lain / Screenshot Tool");
+  });
+
+  document.addEventListener("contextmenu", e => e.preventDefault());
+
+  document.addEventListener("selectstart", e => {
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return true;
+    e.preventDefault();
+  });
+  document.addEventListener("dragstart", e => e.preventDefault());
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "F12") return e.preventDefault();
+
+    if (e.ctrlKey || e.metaKey) {
+      const k = e.key.toLowerCase();
+      if (k === "v" && ["INPUT", "TEXTAREA"].includes(e.target.tagName)) return true;
+      if (["c", "u", "p", "s"].includes(k)) return e.preventDefault();
+      if (e.shiftKey && ["i", "j", "c"].includes(k)) return e.preventDefault();
+    }
+  });
+
   /* 5. Hitung Skor & Kirim ke Google Apps Script */
-  async function submitAssessment() {
+  async function submitAssessment(forceDisqualify = false) {
     if (timerInterval) clearInterval(timerInterval);
 
-    // Cek kelengkapan seluruh 24 soal
-    const missing = [];
-    questions.forEach(q => {
-      if (!answers[q.id] || !answers[q.id].most || !answers[q.id].least) {
-        missing.push(q.id);
-      }
-    });
+    if (!forceDisqualify) {
+      // Cek kelengkapan seluruh 24 soal
+      const missing = [];
+      questions.forEach(q => {
+        if (!answers[q.id] || !answers[q.id].most || !answers[q.id].least) {
+          missing.push(q.id);
+        }
+      });
 
-    if (missing.length > 0) {
-      alert(`Masih ada soal yang belum lengkap (Kotak No: ${missing.join(", ")}). Silakan lengkapi terlebih dahulu.`);
-      currentQuestion = missing[0] - 1;
-      renderQuestion();
-      return;
+      if (missing.length > 0) {
+        alert(`Masih ada soal yang belum lengkap (Kotak No: ${missing.join(", ")}). Silakan lengkapi terlebih dahulu.`);
+        currentQuestion = missing[0] - 1;
+        renderQuestion();
+        return;
+      }
     }
+
+    isTestActive = false;
 
     // Kalkulasi Skor MOST & LEAST
     const mostScores = { D: 0, I: 0, S: 0, C: 0 };
@@ -843,8 +1084,8 @@
 
     questions.forEach(q => {
       const a = answers[q.id];
-      if (a.most) mostScores[a.most]++;
-      if (a.least) leastScores[a.least]++;
+      if (a?.most) mostScores[a.most]++;
+      if (a?.least) leastScores[a.least]++;
     });
 
     const primaryType = Object.keys(mostScores).reduce((a, b) => mostScores[a] > mostScores[b] ? a : b);
@@ -852,15 +1093,17 @@
     const payload = {
       timestamp: new Date().toLocaleString("id-ID"),
       token: activeToken,
-      name: candidateData.name,
-      email: candidateData.email,
-      nohp: candidateData.nohp,
-      posisi: candidateData.posisi,
-      gender: candidateData.gender,
+      name: (candidateData.name || "-") + (forceDisqualify ? " [DISKUALIFIKASI]" : ""),
+      email: candidateData.email || "-",
+      nohp: candidateData.nohp || "-",
+      posisi: candidateData.posisi || "-",
+      gender: candidateData.gender || "-",
       primaryType: primaryType,
       mostScores: mostScores,
       leastScores: leastScores,
-      answersJSON: JSON.stringify(answers)
+      answersJSON: JSON.stringify(answers),
+      cheatStrikes: cheatStrikes,
+      cheatReason: cheatLogReason || "Bersih"
     };
 
     const btn = $("submitBtn");
@@ -878,27 +1121,41 @@
       localStorage.removeItem(STORAGE_KEY);
       $("screen-test").hidden = true;
       $("progress-container").hidden = true;
+
+      if (forceDisqualify) {
+        $("finish-title").innerText = "Ujian Dihentikan (Didiskualifikasi)";
+        $("finish-title").style.color = "var(--err)";
+        $("finish-desc").innerHTML = `Batas toleransi pelanggaran (<strong>${MAX_STRIKES}/${MAX_STRIKES}</strong>) telah terlampaui.<br><br>Token Anda (<strong>${activeToken}</strong>) telah dinonaktifkan permanen dan catatan log telah dikirimkan ke penguji.`;
+      }
+
       $("screen-finish").hidden = false;
       window.scrollTo({ top: 0, behavior: "smooth" });
 
     } catch (err) {
       console.error(err);
-      alert("Terjadi kendala jaringan saat mengirim jawaban. Pastikan koneksi internet stabil lalu klik Kirim Jawaban lagi.");
-      btn.disabled = false;
-      btn.textContent = "Kirim Jawaban ✓";
+      if (!forceDisqualify) {
+        alert("Terjadi kendala jaringan saat mengirim jawaban. Pastikan koneksi internet stabil lalu klik Kirim Jawaban lagi.");
+        btn.disabled = false;
+        btn.textContent = "Kirim Jawaban ✓";
+        isTestActive = true;
+      }
     }
   }
 
   // Cek sesi berjalan saat halaman dimuat
   document.addEventListener("DOMContentLoaded", () => {
+    isPageUnloading = false;
+    triggerGracePeriod();
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.token) {
           const answeredCount = Object.keys(parsed.answers || {}).length;
+          const savedStrikes = parseInt(localStorage.getItem("disc_strikes_" + parsed.token) || parsed.cheatStrikes || "0");
           $("input-token").value = parsed.token;
-          $("resume-msg").innerHTML = `Token: <strong>${parsed.token}</strong> (${parsed.candidate?.name || "Peserta"})<br>Progres: <strong>${answeredCount} / 24 nomor terisi</strong>.`;
+          $("resume-msg").innerHTML = `Token: <strong>${parsed.token}</strong> (${parsed.candidate?.name || "Peserta"})<br>Progres: <strong>${answeredCount} / 24 nomor terisi</strong> | Peringatan Keamanan: <strong>${savedStrikes}/${MAX_STRIKES}</strong>`;
           $("token-resume-alert").hidden = false;
         }
       } catch (e) {}
