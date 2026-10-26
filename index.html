@@ -875,7 +875,7 @@
     }
   }
 
-  function saveProgress() {
+function saveProgress() {
     if (!activeToken) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -884,7 +884,8 @@
         answers: answers,
         currentQuestion: currentQuestion,
         totalTimeSeconds: totalTimeSeconds,
-        cheatStrikes: cheatStrikes
+        cheatStrikes: cheatStrikes,
+        isTestActive: isTestActive // <-- Tambahkan baris ini
       }));
       localStorage.setItem("disc_strikes_" + activeToken, cheatStrikes.toString());
     } catch (e) {}
@@ -922,7 +923,8 @@
 
     triggerGracePeriod();
     $("screen-token").hidden = true;
-    if (candidateData.name && candidateData.email) {
+// SESUDAH (GANTI MENJADI INI):
+    if (data.isTestActive) {
       $("screen-test").hidden = false;
       $("progress-container").hidden = false;
       isTestActive = true;
@@ -931,7 +933,6 @@
     } else {
       $("screen-profile").hidden = false;
     }
-  }
 
   /* ============ SISTEM DETEKSI PELANGGARAN & MODAL (STRIKE SYSTEM) ============ */
   function registerViolation(reason) {
