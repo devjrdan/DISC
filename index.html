@@ -282,10 +282,7 @@
       <div id="token-resume-alert" hidden style="margin-top: 24px; padding: 18px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;">
         <h3 style="color: var(--primary); font-size: 1rem; margin-bottom: 6px;">Sesi Pengerjaan Ditemukan!</h3>
         <p id="resume-msg" style="margin-bottom: 14px; font-size: 0.92rem; color: #1e293b;"></p>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-<!-- SESUDAH: -->
-<button class="btn" style="background: var(--accent); width: 100%;" onclick="resumeSession()">Lanjutkan Pengerjaan ➔</button>
-        </div>
+        <button class="btn" style="background: var(--accent); width: 100%;" onclick="resumeSession()">Lanjutkan Pengerjaan ➔</button>
       </div>
     </div>
 
@@ -361,9 +358,9 @@
           <li><strong>Alokasi Waktu Pengerjaan:</strong> 7 Menit (timer mulai saat tombol ditekan).</li>
           <li><strong>Jangan sampai layar perangkat mati / terkunci</strong> selama pengerjaan berlangsung.</li>
           <li><strong>Jangan berpindah tab, meminimalkan peramban, atau membuka jendela lain.</strong></li>
-          <li><strong>Dilarang melakukan tangkapan layar (screenshot)</strong> — setiap pelanggaran tercatat otomatis (konsekuensi <strong>Peringatan 0/3 hingga Diskualifikasi</strong>).</li>
-          <li><strong>Jangan gunakan aplikasi overlay eksternal</strong> (seperti <em>AssistiveTouch</em>, <em>floating chat</em>, atau mode <em>Split Screen</em>).</li>
-          <li>Sangat disarankan menggunakan perangkat <strong>Windows (PC/Laptop)</strong> atau <strong>Android</strong> demi kelancaran sistem.</li>
+          <li><strong>Dilarang melakukan tangkapan layar (screenshot)</strong> — setiap pelanggaran tercatat otomatis (maksimal 3 peringatan sebelum diskualifikasi).</li>
+          <li><strong>Jangan gunakan aplikasi overlay eksternal</strong> (seperti floating chat atau split screen).</li>
+          <li>Sangat disarankan menggunakan perangkat <strong>PC/Laptop</strong> demi kelancaran sistem.</li>
         </ul>
       </div>
 
@@ -875,7 +872,7 @@
     }
   }
 
-function saveProgress() {
+  function saveProgress() {
     if (!activeToken) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -885,7 +882,7 @@ function saveProgress() {
         currentQuestion: currentQuestion,
         totalTimeSeconds: totalTimeSeconds,
         cheatStrikes: cheatStrikes,
-        isTestActive: isTestActive // <-- Tambahkan baris ini
+        isTestActive: isTestActive
       }));
       localStorage.setItem("disc_strikes_" + activeToken, cheatStrikes.toString());
     } catch (e) {}
@@ -923,7 +920,8 @@ function saveProgress() {
 
     triggerGracePeriod();
     $("screen-token").hidden = true;
-// SESUDAH (GANTI MENJADI INI):
+
+    // CEK STATUS LAYAR: JIKA BELUM MULAI TES, TETAP DI DATA DIRI
     if (data.isTestActive) {
       $("screen-test").hidden = false;
       $("progress-container").hidden = false;
@@ -933,6 +931,7 @@ function saveProgress() {
     } else {
       $("screen-profile").hidden = false;
     }
+  }
 
   /* ============ SISTEM DETEKSI PELANGGARAN & MODAL (STRIKE SYSTEM) ============ */
   function registerViolation(reason) {
@@ -1052,7 +1051,6 @@ function saveProgress() {
     if (timerInterval) clearInterval(timerInterval);
 
     if (!forceDisqualify) {
-      // Cek kelengkapan seluruh 24 soal
       const missing = [];
       questions.forEach(q => {
         if (!answers[q.id] || !answers[q.id].most || !answers[q.id].least) {
@@ -1070,7 +1068,6 @@ function saveProgress() {
 
     isTestActive = false;
 
-    // Kalkulasi Skor MOST & LEAST
     const mostScores = { D: 0, I: 0, S: 0, C: 0 };
     const leastScores = { D: 0, I: 0, S: 0, C: 0 };
 
